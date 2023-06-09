@@ -1,0 +1,48 @@
+body {
+    padding-bottom: 4rem;
+    direction: rtl;
+    font-family: Tahoma;
+}
+
+
+/*
+#################
+## Order/ View ##
+#################
+*/
+
+table {
+    width: 100%;
+    border-spacing: 0px;
+}
+
+thead {
+    background-color: #bdb9b9;
+}
+
+th {
+    padding: 10px;
+}
+
+td {
+    padding: 5px;
+    border: solid 1px #eeeeee;
+}
+
+.container-fluid {
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.col-md-4 {
+    width: 33.3333%;
+    float: right;
+}
+
+.text-right {
+    text-align: left;
+}
+
+#order_table td.image img {
+	width: 100px;
+}

@@ -1,0 +1,560 @@
+.login_page {
+	background: rgba(24,152,184,1);
+	background: -moz-radial-gradient(center, ellipse cover, rgba(24,152,184,1) 0%, rgba(64,81,194,1) 41%, rgba(21,16,173,1) 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(24,152,184,1)), color-stop(41%, rgba(64,81,194,1)), color-stop(100%, rgba(21,16,173,1)));
+	background: -webkit-radial-gradient(center, ellipse cover, rgba(24,152,184,1) 0%, rgba(64,81,194,1) 41%, rgba(21,16,173,1) 100%);
+	background: -o-radial-gradient(center, ellipse cover, rgba(24,152,184,1) 0%, rgba(64,81,194,1) 41%, rgba(21,16,173,1) 100%);
+	background: -ms-radial-gradient(center, ellipse cover, rgba(24,152,184,1) 0%, rgba(64,81,194,1) 41%, rgba(21,16,173,1) 100%);
+	background: radial-gradient(ellipse at center, rgba(24,152,184,1) 0%, rgba(64,81,194,1) 41%, rgba(21,16,173,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1898b8', endColorstr='#1510ad', GradientType=1 );
+}
+.login_page .vh100 {
+	height: 100vh;
+}
+
+.login_page .content {
+	background-color: #dfeaec;
+	padding: 1rem;
+	border-radius: 0.5rem;
+}
+
+/*#top_bar {
+	background-color: #E1F5FE!important;
+}*/
+
+#top_bar > nav {
+	padding-top: 0rem;
+	padding-bottom: 0rem;
+	/*background-image: url("../images/top_bar_bg.jpg");*/
+	background-color: #390469;
+}
+
+#tool_bar input {
+	padding-top: 0.0rem;
+	padding-bottom: 0.4rem;
+}
+
+#tool_bar {
+    margin-bottom: 1rem;
+}
+
+.h-divider{
+	margin-top:5px;
+	margin-bottom:5px;
+	height:1px;
+	width:100%;
+	border-top:1px solid gray;
+}
+
+#title_bar {
+	background-color: #390469;
+	color: white;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+	margin-bottom: 0.5rem;
+}
+
+#title_bar .h5 {
+	margin-bottom: 0rem;
+}
+
+#footer_bar {
+	background-color: #2f3a5f;
+}
+
+#footer_bar, #footer_bar a {
+	color: #eeeeee;
+}
+
+#footer_bar a:hover {
+	color: #4bc2ee;
+}
+
+
+.table td.fit,
+.table th.fit {
+	white-space: nowrap;
+	width: 1%;
+}
+
+
+body {
+    padding-bottom: 4rem;
+}
+
+/***** Reza Menu Bar *****/
+.reza_nav {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+}
+
+.reza_nav, .reza_nav ul {
+    display: flex;
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+}
+
+.reza_nav ul {
+    position: absolute;
+    top: 0;
+    /*left: auto;*/
+    z-index: 1000;
+    display: none;
+    float: right;
+    min-width: 10rem;
+    padding: .5rem 0;
+    /*margin: .125rem 0 0;*/
+    font-size: 1rem;
+    color: #212529;
+    text-align: right;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+    right: 100%;
+}
+
+.reza_nav > li > a {
+    padding: .5rem;
+    display: block;
+}
+
+.reza_nav > li > ul a {
+    padding: .25rem .5rem;
+    display: block;
+}
+
+.reza_nav li:hover > ul {
+    display: block;
+    /*margin-top: -5px;*/
+    top: auto;
+    right: auto;
+}
+
+.reza_nav li ul li:hover > ul {
+    display: block;
+    float: none;
+    margin-top: -1.8rem;
+    right: 85%;
+}
+
+/***** PopOver *****/
+.fix_popover {
+    margin-right: 0.3rem;
+}
+
+/* Google Chrome browsers will add some outline to the elements, here we fix it */
+* {
+    outline: none;
+}
+
+#customer_details {
+    margin-top: 1rem;
+}
+.form-check-label{
+    margin-bottom: 1rem;
+}
+.search{
+    width: 150px;
+}
+
+.margin{
+     margin-right: 1rem;
+ }
+.margin_t{
+    margin-top: 0.75rem;
+}
+#close.fa-2x{
+    line-height: 1rem;
+}
+.form-check-label {
+    margin-bottom: 0rem;
+}
+.form-check-label {
+    padding-right: 10px;
+    padding-left: 10px;
+
+}
+
+.city .checkbox-inline {
+    margin-left: 1rem;
+}
+
+.city .checkbox-inline .checkbox {
+    margin-left: 0.2rem;
+}
+
+.margin_l {
+    margin-left: 0.3rem;
+}
+
+.title_table {
+    background-color: #eee;
+}
+
+/*
+#################################
+## Marketing / Send Email Page ##
+#################################*/
+.send_email_page .selected_holder {
+    height: 150px;
+    overflow: auto;
+    min-height: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+}
+
+.send_email_page .selected_holder .close {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #060606;
+}
+
+.send_email_page .selected_item_holder {
+    border: solid 1px #c1bbbb;
+    display: inline-block;
+    padding: 0.3rem;
+}
+
+
+/*
+#############
+## Modules ##
+#############
+*/
+.selected_items .selected_holder {
+    height: 150px;
+    overflow: auto;
+    min-height: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+}
+
+.selected_items .selected_holder .close {
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #060606;
+}
+
+.selected_items .selected_item_holder {
+    border: solid 1px #c1bbbb;
+    display: inline-block;
+    padding: 0.3rem;
+}
+
+
+/*
+#################
+## Add Modules ##
+#################
+*/
+
+.remove_default_list_style li,
+.selected_items li{
+    list-style-type: none;
+}
+
+.remove_default_list_style,
+.selected_items ul:first-child{
+    padding-right: 0px;
+}
+
+/*
+######################
+## ADD PRODUCT PAGE ##
+######################
+*/
+/*.add_product_page #main_options_holder .option_holder .influence_on_product {
+    opacity: 0.1;
+}
+
+.add_product_page #main_options_holder .option_holder.enabled .influence_on_product {
+    opacity: 1;
+}*/
+
+#main_options_holder .option_holder .influence_on_product tbody {
+    display: none;
+}
+
+#main_options_holder .option_holder.enabled .influence_on_product tbody {
+    display: table-row-group;
+}
+
+#main_options_holder .option_holder .influence_on_product tbody tr.disabled td {
+    display: none;
+}
+
+#main_options_holder .option_holder .influence_on_product tbody tr.disabled td.selectable,
+#main_options_holder .option_holder .influence_on_product tbody tr.disabled td.option_value,
+#main_options_holder .option_holder .influence_on_product tbody tr.enabled td {
+    display: table-cell;
+}
+
+/*
+#################
+## Order/ View ##
+#################
+*/
+
+#order_table td{
+    vertical-align: middle;
+}
+
+#order_table .order_description{
+    min-width: 250px;
+}
+
+#order_table .fa-window-close{
+    font-size: 25px;
+    float: left;
+    color: red;
+}
+
+#order_table .fa-pen-square{
+    font-size: 29px;
+    float: left;
+    color: #3a58ff;
+}
+
+
+#order_table .image{
+   width: 130px;
+    min-width: 130px;
+}
+
+#order_table .description{
+    min-width: 250px;
+}
+
+#order_table img{
+    width: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#order_table .i {
+    display: block;
+}
+
+.modal-footer .apply {
+    background-color: #009600;
+    color: white;
+}
+
+.modal-footer .cancel {
+    background-color: red;
+    color: white;
+}
+
+/*## Add history ##*/
+
+.view_order_page .history_title{
+    background-color: #e9ecef;
+    padding: .75rem;
+    border-bottom: 2px solid #dee2e6;
+    margin-buttom: 0.75rem;
+}
+
+.view_order_page .add_history{
+    margin-bottom: 0.75rem;
+}
+
+.view_order_page .description{
+    min-width: 200px;
+}
+
+
+
+/*
+##################
+## Add Shipping ##
+##################
+*/
+
+.tariff_box {
+    border: solid 1px #d4d4d4;
+    background-color: #eee;
+    border-radius: .25rem;
+    padding: 0.5rem;
+    margin: 0.2rem;
+}
+
+.tariff_box_2 {
+    background-color: #ffffff;
+    border-radius: .25rem;
+    padding: 0.5rem;
+}
+
+.tariff_box_tool_bar {
+    text-align: left;
+    font-size: 20px;
+}
+
+/*
+#######################
+## Add Fix Bootstrap ##
+#######################
+*/
+.custom-file-input{
+    height: initial ;
+    opacity: 1;
+}
+.custom-file-label{
+    display: none;
+}
+.custom-file{
+    border: solid 1px #eee;
+    padding: 3px;
+    display: block;
+    height: initial ;
+}
+
+/*
+###############
+## Dashboard ##
+###############
+*/
+.box{
+    margin-top: 1rem;
+}
+.box_title {
+    background-color: #525354;
+    color: #ededed;
+    padding: 10px;
+    text-align: center;
+}
+
+
+.box_content h1 {
+    color: #333333;
+}
+
+.box_content a:hover {
+    text-decoration: none;
+}
+
+.box_content{
+     background-color: #dde6ff;
+     padding: 20px;
+}
+
+.box_content i{
+    font-size: 50px;
+    opacity: 0.6;
+    transition: all 1s;
+    float: left;
+    color: #4b4b4b;
+}
+
+.box_content i:hover{
+    opacity: 1;
+}
+
+.search_sort {
+    border: 1px solid #ced4da;
+    padding: 4px;
+    border-radius: .25rem;
+}
+
+/*
+####################
+## Loading Holder ##
+####################
+*/
+.loading_holder {
+    display: none;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #404040;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #FFFFFF;
+    top: 0px;
+    right: 0px;
+}
+
+.loading_holder .content {
+    top: 1%;
+    position: relative;
+}
+
+.loading_holder .loader_spin {
+    margin: 0px auto;
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 30px;
+    height: 30px;
+    -webkit-animation: loading_spin 2s linear infinite;
+    animation: loading_spin 2s linear infinite;
+}
+
+.on_loading .loading_holder {
+    display: block;
+}
+
+/* Safari */
+@-webkit-keyframes loading_spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes loading_spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/*
+#######################
+## Ajax Uplod Module ##
+#######################
+*/
+.upload_module_holder {
+    position: relative;
+}
+
+.upload_module_holder .uploaded_module {
+    display: none;
+}
+
+.upload_module_holder.uploaded .upload_module {
+    display: none;
+}
+
+.upload_module_holder.uploaded .uploaded_module {
+    display: block;
+}
+
+.upload_module_holder .uploaded_module {
+    /*background-color: #eee;
+    padding: 1rem;*/
+}
+
+.upload_module_holder .uploaded_module .message_holder {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 5px;
+}
+
+/*
+################################
+## close_upload_module_holder ##
+################################
+*/
+#upload_module_holder .upload_module_holder .upload_module .close{
+    opacity: 1;
+}
+
