@@ -1443,43 +1443,60 @@ class Cart extends CI_Controller
 				$insert_id = $this->db->insert_id();
 				if ($insert_id)
 				{
+					$this->session->set_userdata('orderId', $insert_id);
 					$response = array("status" => "successful");
 
 					//Send Data to Bank
-					$this->db->where(array('id' => $this->input->post('payment')));
-					$payment_qu = $this->db->get('payment');
-					foreach($payment_qu->result() as $pay_ro_qu)
-					{
-						if($pay_ro_qu->title == 'بانک پاسارگاد')
-						{
-							$this->load->library('payment/pasargad/pasargad');
-                            $order_total_sum = floatval($order_total_sum) * 10;
-                            $order_total_sum = number_format($order_total_sum,0,"","");
-                            //$order_total_sum = 1000; //برای تست گاهی این رو به هزار ریال تغییر میدیم
-							$redirect_form = $this->pasargad->send_to_bank($pay_ro_qu->merchantcode, $pay_ro_qu->terminal_code, $order_total_sum, $insert_id);
-                            $response['redirect_form'] = $redirect_form;
+					$this->db->where(array('id' => $this->input->post('payment'), 'publish' => 'yes'));
+					$paymentQuery = $this->db->get('payment');
+					if ($this->db->count_all_results() == 1) {
+						$paymentRow = $paymentQuery->row();
+						if ($paymentRow->extra) {
+							$paymentRow->extra = json_decode($paymentRow->extra);
+
+							$order_total_sum = floatval($order_total_sum) * 10;
+							$order_total_sum = number_format($order_total_sum,0,"","");
+							//$order_total_sum = 1000; //برای تست گاهی این رو به هزار ریال تغییر میدیم
+							switch ($this->input->post('payment')) {
+								case 1:
+									$this->load->library('payment/pasargad/pasargad');
+									$redirect_form = $this->pasargad->send_to_bank($paymentRow->merchantcode, $paymentRow->terminal_code, $order_total_sum, $insert_id);
+									break;
+								case 2:
+									$this->load->library('payment/mellat/mellat');
+									$redirect_form = $this->mellat->send_to_bank($paymentRow->merchantcode, $paymentRow->terminal_code, $paymentRow->extra->password, $order_total_sum, $insert_id, $dadeh['user_id']);
+									break;
+							}
+
+							$response['redirect_form'] = $redirect_form;
+
+							//////////////////////////////////////////////
+							//////increase sales number of products//////
+							////////////////////////////////////////////
+							$products_in_cart = $this->session->userdata('cart');
+							$this->db->set('sales_number', 'sales_number+1', FALSE);
+							$ad = 1;
+							foreach($products_in_cart as $pr_in_row => $pr_val_row)
+							{
+								if($ad == 1)
+								{
+									$this->db->where(array('id' => $pr_in_row));
+								}
+								else
+								{
+									$this->db->or_where(array('id' => $pr_in_row));
+								}
+								$ad++;
+							}
+							$this->db->update('add_products');
+						}
+						else {
+							$response = array("status" => "unsuccessful", 'message' => 'تنظیمات درگاه پرداخت اشتباه است. لطفا با مدیریت تماس بگیرید.');
 						}
 					}
-					//////////////////////////////////////////////
-					//////increase sales number of products//////
-					////////////////////////////////////////////
-					$products_in_cart = $this->session->userdata('cart');
-					$this->db->set('sales_number', 'sales_number+1', FALSE);
-					$ad = 1;
-					foreach($products_in_cart as $pr_in_row => $pr_val_row)
-					{
-						if($ad == 1)
-						{
-							$this->db->where(array('id' => $pr_in_row));
-						}
-						else
-						{
-							$this->db->or_where(array('id' => $pr_in_row));
-						}
-						$ad++;
+					else {
+						$response = array("status" => "unsuccessful", 'message' => 'درگاه پرداخت انتخاب شده، وجود ندارد. لطفا صفحه را ببندید و مجددا تلاش نمایید.');
 					}
-					$this->db->update('add_products');
-					//////////////////////////////////////////////////
 				}
 				else
 				{
@@ -1785,6 +1802,288 @@ class Cart extends CI_Controller
                 }
             }
 
+        }
+        else if ($bank_name == 'mellat')
+        {
+			$orderId = $this->session->userdata('orderId');
+            if (isset($_POST['ResCode']) && $_POST['ResCode'] == 0 && isset($orderId) && isset($_POST['SaleOrderId']) && $orderId == $_POST['SaleOrderId'] && isset($_POST['SaleReferenceId']))
+            {
+				$this->db->where(array('id' => 2, 'publish' => 'yes'));
+				$paymentQuery = $this->db->get('payment');
+				if ($this->db->count_all_results() == 1) {
+					$paymentRow = $paymentQuery->row();
+					if ($paymentRow->extra) {
+						$paymentRow->extra = json_decode($paymentRow->extra);
+						$this->load->library('payment/mellat/mellat');
+
+						$verifyResult = $this->mellat->verify_payment($paymentRow->merchantcode, $paymentRow->terminal_code, $paymentRow->extra->password, $orderId, $_POST['SaleReferenceId']);
+						if ($verifyResult) {
+							//عملیات پرداخت و تائید آن توسط بانک با موفقیت انجام شد
+							//میبایست پیام موفقیت آمیز بودن را به کاربر نمایش دهیم
+							$data["message"] = '<div class="w3-card-4 w3-center w3-pale-green w3-padding-64 message">
+                        <div class="w3-container">
+                            <p><b>با تشکر از خرید شما</b></p>
+                            <p>عملیات پرداخت موفقیت آمیز بود.</p>
+                            <p> سفارش شما با کد '.$orderId.' ثبت شد. در صورتی که عضو سایت هستید، میتوانید از طریق <a href="'.base_url("profile").'" class="w3-text-blue">پیگیری سفارش</a> وضعیت سفارش خود را مشاهده نمایید. </p>
+                        </div>
+                
+                        <div class="w3-margin-top">
+                            <a href="'. base_url("profile").'" class="btn w3-button w3-round w3-green w3-margin-bottom" style="width: 150px">پروفایل</a>
+                            <a href="'.base_url().'" class="btn w3-button w3-round w3-red w3-margin-bottom" style="width: 150px">برگشت به سایت</a>
+                        </div>
+                    </div>';
+							///////////////////////////////////////////////////////
+							/////////////////send email for admin/////////////////
+							/////////////////////////////////////////////////////
+							$this->db->select('admin_email,system_email');
+							$this->db->where(array('id' => 1));
+							$setting_query = $this->db->get('setting')->result();
+							foreach($setting_query as $set_row)
+							{
+								$admin_email = $set_row->admin_email;
+								$system_email = $set_row->system_email;
+								$order_link = base_url('admin/order/view/'.$orderId);
+								$email_message = "<div dir='rtl' style='text-align: right;'>با سلام<br/>سفارش جدیدی در سایت ثبت شده است. لطفا جهت بررسی به آدرس زیر رجوع نمایید.<br/><a href=$order_link>$order_link</a></div>";
+								$this->load->library('email');
+								$mail_config['mailtype'] = "html";
+								$this->email->initialize($mail_config);
+								$this->email->from($system_email, $system_email);
+								$this->email->to($admin_email);
+								$this->email->subject('سفارش جدید');
+								$this->email->message($email_message);
+								$this->email->send();
+							}
+
+							/////////////////////////////////////////////////////
+							//////update status of order to the paid status//////
+							/////////////////////////////////////////////////////
+							$this->db->where(array('id' => $orderId));
+							$orders_query = $this->db->get('orders');
+							foreach($orders_query->result() as $order_row)
+							{
+								$history_order = json_decode($order_row->history_order);
+								$new_history_order = array();
+								$new_history_order['date_added'] = time();
+								$new_history_order['description'] = '';
+								$new_history_order['condition'] = 3;
+								$new_history_order['customer_notified'] = '';
+								if(is_array($history_order))
+								{
+									array_push($history_order, $new_history_order);
+								}
+								else
+								{
+									$history_order = array();
+									array_push($history_order, $new_history_order);
+								}
+								$dadeh_up = array(
+									'history_order' => json_encode($history_order),
+									'customer_notified' => '',
+									'condition' => 3,
+									'modify_date' => time()
+								);
+								$this->db->where('id', $orderId);
+								$is_update = $this->db->update('orders', $dadeh_up);
+								/////////////////////////////////////////////////////////////
+								///////Decrease number of product and option in order///////
+								///////////////////////////////////////////////////////////
+								$cart = json_decode($order_row->cart);
+								if($is_update == true && $cart != '' && $cart != array() && $cart != null)
+								{
+									$option_query = json_decode($order_row->option_query);
+									$sh = 1;
+									foreach ($cart as $in_cart => $val_cart)
+									{
+										if($sh == 1)
+										{
+											$this->db->where(array('id' => $in_cart));
+										}
+										else
+										{
+											$this->db->or_where(array('id' => $in_cart));
+										}
+										$sh++;
+									}
+									if($sh > 1)
+									{
+										$this->db->select('id,category,type_of_discount,discount_amount,options,number');
+										$product_array = $this->db->get('add_products')->result();
+									}
+
+									foreach($cart as $in_cart => $val_cart)
+									{
+										$number_of_product_to_decrease = $val_cart->tedad;
+										if(isset($val_cart->base_product))
+										{
+											if($val_cart->base_product == 'not_sold')
+											{
+												$number_of_product_to_decrease = 0;
+											}
+										}
+										if(isset($product_array))
+										{
+											foreach($product_array as $pr_row)
+											{
+												if($in_cart == $pr_row->id)
+												{
+													$product_category = $pr_row->category;
+													$option_json = json_decode($pr_row->options);
+													break;
+												}
+											}
+										}
+										if(isset($product_category) && isset($option_query))
+										{
+											foreach($option_query as $op_row)
+											{
+												$temp_val = "option_".$op_row->id;
+												if($op_row->category == $product_category && isset($val_cart->$temp_val))
+												{
+													if($op_row->type == 'single_entry' || $op_row->type == 'textarea' || $op_row->type == 'multiple_entry' || $op_row->type == 'upload' || $op_row->type == 'file')
+													{
+														$op_id = $op_row->id;
+														if(isset($option_json))
+														{
+															if(isset($option_json->$op_id))
+															{
+																if(isset($option_json->$op_id->product_quantity_with_option))
+																{
+																	$option_json->$op_id->product_quantity_with_option = $option_json->$op_id->product_quantity_with_option - $val_cart->tedad;
+																	if(isset($option_json->$op_id->reduce_total_inventory))
+																	{
+																		if($option_json->$op_id->reduce_total_inventory == 'yes')
+																		{
+																			$number_of_product_to_decrease = $number_of_product_to_decrease + $val_cart->tedad;
+																		}
+																	}
+																}
+															}
+														}
+													}
+													elseif($op_row->type == 'select')
+													{
+														$temp_select = $val_cart->$temp_val;
+														$op_id = $op_row->id;
+														if(isset($option_json))
+														{
+															if(isset($option_json->$op_id))
+															{
+																if(isset($option_json->$op_id->$temp_select))
+																{
+																	if(isset($option_json->$op_id->$temp_select->product_quantity_with_option))
+																	{
+																		$option_json->$op_id->$temp_select->product_quantity_with_option = $option_json->$op_id->$temp_select->product_quantity_with_option - $val_cart->tedad;
+																		if(isset($option_json->$op_id->$temp_select->reduce_total_inventory))
+																		{
+																			if($option_json->$op_id->$temp_select->reduce_total_inventory == 'yes')
+																			{
+																				$number_of_product_to_decrease = $number_of_product_to_decrease + $val_cart->tedad;
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+													elseif($op_row->type == 'checkbox')
+													{
+														$temp_checkbox = $val_cart->$temp_val;
+														$temp_checkbox_array = json_decode(json_encode($temp_checkbox), true);
+														$op_id = $op_row->id;
+														if(isset($option_json))
+														{
+															foreach($temp_checkbox_array as $t_row)
+															{
+																if(isset($option_json->$op_id))
+																{
+																	if(isset($option_json->$op_id->$t_row))
+																	{
+																		if(isset($option_json->$op_id->$t_row->product_quantity_with_option))
+																		{
+																			$option_json->$op_id->$t_row->product_quantity_with_option = $option_json->$op_id->$t_row->product_quantity_with_option - $val_cart->tedad;
+																			if(isset($option_json->$op_id->$t_row->reduce_total_inventory))
+																			{
+																				if($option_json->$op_id->$t_row->reduce_total_inventory == 'yes')
+																				{
+																					$number_of_product_to_decrease = $number_of_product_to_decrease + $val_cart->tedad;
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+										$this->db->set('number', "number-$number_of_product_to_decrease", FALSE);
+										if(isset($option_json))
+										{
+											$option_json = json_encode($option_json);
+											$this->db->set('options', $option_json);
+										}
+										$this->db->where(array('id' => $in_cart));
+										$this->db->update('add_products');
+									}
+								}
+							}
+							$this->session->unset_userdata('cart');
+							$this->session->unset_userdata('orderId');
+
+							$settleResult = $this->mellat->settle_request($paymentRow->merchantcode, $paymentRow->terminal_code, $paymentRow->extra->password, $orderId, $_POST['SaleReferenceId']);
+						}
+						else {
+							$data["message"] = '<div class="w3-card-4 w3-center w3-pale-red w3-padding-64 message">
+                    <div class="w3-container">
+                        <p><b>تائید پرداخت توسط بانک مردود شد</b></p>
+                        <p>لطفا مجددا امتحان نمایید و در صورتی که مبلغ سفارش از حساب شما کسر شده است، طی 72 ساعت برگشت داده خواهد شد در غیر اینصورت با همکاران ما تماس حاصل نمایید.</p>
+                    </div>
+            
+                    <div class="w3-margin-top">
+                        <a href="'.base_url().'" class="btn w3-button w3-round w3-red w3-margin-bottom" style="width: 150px">برگشت به سایت</a>
+                    </div>
+                </div>';
+						}
+					}
+					else {
+						$data["message"] = '<div class="w3-card-4 w3-center w3-pale-red w3-padding-64 message">
+                    <div class="w3-container">
+                        <p><b>.خطای درگاه پرداخت در پایگاه داده</b></p>
+                        <p>لطفا مجددا امتحان نمایید و در صورتی که مبلغ سفارش از حساب شما کسر شده است، طی 72 ساعت برگشت داده خواهد شد در غیر اینصورت با همکاران ما تماس حاصل نمایید.</p>
+                    </div>
+            
+                    <div class="w3-margin-top">
+                        <a href="'.base_url().'" class="btn w3-button w3-round w3-red w3-margin-bottom" style="width: 150px">برگشت به سایت</a>
+                    </div>
+                </div>';
+					}
+				}
+				else {
+					$data["message"] = '<div class="w3-card-4 w3-center w3-pale-red w3-padding-64 message">
+                    <div class="w3-container">
+                        <p><b>.ارتباط با پایگاه داده با خطا مواجه شد</b></p>
+                        <p>لطفا مجددا امتحان نمایید و در صورتی که مبلغ سفارش از حساب شما کسر شده است، طی 72 ساعت برگشت داده خواهد شد در غیر اینصورت با همکاران ما تماس حاصل نمایید.</p>
+                    </div>
+            
+                    <div class="w3-margin-top">
+                        <a href="'.base_url().'" class="btn w3-button w3-round w3-red w3-margin-bottom" style="width: 150px">برگشت به سایت</a>
+                    </div>
+                </div>';
+				}
+            }
+			else {
+				$data["message"] = '<div class="w3-card-4 w3-center w3-pale-red w3-padding-64 message">
+                    <div class="w3-container">
+                        <p><b>پرداخت ناموفق بود</b></p>
+                        <p>لطفا مجددا امتحان نمایید و در صورتی که مبلغ سفارش از حساب شما کسر شده است، طی 72 ساعت برگشت داده خواهد شد در غیر اینصورت با همکاران ما تماس حاصل نمایید.</p>
+                    </div>
+            
+                    <div class="w3-margin-top">
+                        <a href="'.base_url().'" class="btn w3-button w3-round w3-red w3-margin-bottom" style="width: 150px">برگشت به سایت</a>
+                    </div>
+                </div>';
+			}
         }
         else
         {
